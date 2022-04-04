@@ -6,6 +6,7 @@ go run main.go -users userListLocation -pass passwordListLocation -u https://sit
 
 # TODO
 * add feedback, filter results based on 200/301 or maybe custom responses
+* add ability to GET vs. POST
 * add some ability to slow this down, currently it's gonna get you ratelimited quickly
   * probably should throw all potential permutations into a list and create requests in batches
 * add ability to add cookies in case these are needed to hit endpoint
