@@ -9,6 +9,7 @@ import (
 
 func main() {
 	//====================	Handle flags
+	fmt.Println("basic auth bruting")
 	userList := flag.String("users", "./sampleUsers", "user list")
 	passwordList := flag.String("pass", "./small", "password list")
 	//====================	Threading TBD - probably need to figure out a way to slow this down
