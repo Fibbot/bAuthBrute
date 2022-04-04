@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 )
@@ -15,7 +16,7 @@ func SyncScanWg(input []string, urlInput string, pass []string, method string) [
 	var status = make([]string, 0)
 	for i := 0; i < len(input); i++ { // change this to be less/gt concurrency?
 		wg.Add(1) // Increases internal counter by 1
-		go func(j int) {
+		go func(j int, uname string) {
 			defer wg.Done() // Decrement counter by 1 until done with this stretch of code
 			for k := 0; k < len(pass); k++ {
 				v := url.Values{}
@@ -32,9 +33,14 @@ func SyncScanWg(input []string, urlInput string, pass []string, method string) [
 				fmt.Println(b)
 				fmt.Println(resp.Status)
 
+				if resp.StatusCode == 200 {
+					addToSuccess := "Success! " + strconv.Itoa(resp.StatusCode) + " with " + uname + ":" + pass[k]
+					status = append(status, addToSuccess) //for now returning it this way in case someone wants to see if there are multiple winners
+				}
+
 			}
 
-		}(i)
+		}(i, input[i])
 	}
 	wg.Wait() // Block execution of goroutine until internal counter is 0
 
