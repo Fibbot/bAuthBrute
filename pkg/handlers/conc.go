@@ -30,6 +30,7 @@ func SyncScanWg(input []string, urlInput string, pass []string) []string {
 				bodyText, err := ioutil.ReadAll(resp.Body) // resp. body requires this to print correctly
 				b := string(bodyText)
 				fmt.Println(b)
+				fmt.Println(resp.Status)
 
 			}
 
