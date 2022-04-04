@@ -46,3 +46,12 @@ func SyncScanWg(input []string, urlInput string, pass []string, method string) [
 
 	return status
 }
+
+func makeRequests() {
+	// need an int for threads
+	var threads = 1
+	startRequests := make(chan string)
+	for i := 0; i < threads; i++ {
+
+	}
+}
