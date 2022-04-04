@@ -10,7 +10,7 @@ import (
 	"sync"
 )
 
-func SyncScanWg(input []string, urlInput string, pass []string) []string {
+func SyncScanWg(input []string, urlInput string, pass []string, method string) []string {
 	var wg sync.WaitGroup
 	var status = make([]string, 0)
 	for i := 0; i < len(input); i++ { // change this to be less/gt concurrency?
@@ -21,7 +21,7 @@ func SyncScanWg(input []string, urlInput string, pass []string) []string {
 				v := url.Values{}
 				v.Set("name", "valueOfName")                                                 // add to body
 				client := &http.Client{}                                                     // create the request client
-				req, err := http.NewRequest("POST", urlInput, strings.NewReader(v.Encode())) // POST with name:value
+				req, err := http.NewRequest(method, urlInput, strings.NewReader(v.Encode())) // request with name:value
 				req.SetBasicAuth(input[j], pass[k])                                          // add basic auth header
 				resp, err := client.Do(req)                                                  // send req
 				if err != nil {

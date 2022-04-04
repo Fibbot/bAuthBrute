@@ -15,6 +15,7 @@ func main() {
 	//====================	Threading TBD - probably need to figure out a way to slow this down
 	// threads := flag.Int("t", 1, "threads")
 	urlInput := flag.String("u", "http://localhost:8080/test", "target url")
+	method := flag.String("m", "POST", "request method")
 	//================TODO	probably need a cookie(s) value here too
 
 	flag.Parse()
@@ -23,6 +24,6 @@ func main() {
 	users := fileHandler.ImportFile(*userList)
 	pass := fileHandler.ImportFile(*passwordList)
 	//====================	Hit 'em up
-	conc.SyncScanWg(users, *urlInput, pass)
+	conc.SyncScanWg(users, *urlInput, pass, *method)
 
 }
