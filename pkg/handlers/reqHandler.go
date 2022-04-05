@@ -9,8 +9,8 @@ import (
 	"strings"
 )
 
-func MakeDict(users []string, urlInput string, pass []string, method string) []string {
-	// need an int for threads
+func MakeDict(users []string, urlInput string, pass []string, method string, success int) []string {
+
 	bigDict := make([]string, 0)
 	results := make([]string, 0)
 
@@ -22,9 +22,8 @@ func MakeDict(users []string, urlInput string, pass []string, method string) []s
 		}
 	}
 
-	// probably add some concurrency here
 	for i := 0; i < len(bigDict); i++ {
-		a := makeRequest(bigDict[i], urlInput, method)
+		a := makeRequest(bigDict[i], urlInput, method, success)
 		if a != "" {
 			results = append(results, a)
 		}
@@ -33,7 +32,7 @@ func MakeDict(users []string, urlInput string, pass []string, method string) []s
 	return results
 }
 
-func makeRequest(userPass string, urlInput string, method string) string {
+func makeRequest(userPass string, urlInput string, method string, success int) string {
 	v := url.Values{}
 	v.Set("name", "valueOfName")                                                 // add to body
 	client := &http.Client{}                                                     // create the request client
@@ -51,12 +50,12 @@ func makeRequest(userPass string, urlInput string, method string) string {
 		fmt.Println(resp.Status)
 	*/
 
-	if resp.StatusCode == 200 {
+	if resp.StatusCode == success {
 		decodeIt, err := base64.StdEncoding.DecodeString(userPass)
 		if err != nil {
 			log.Fatal(err)
 		}
-		addToSuccess := "Success! " + strconv.Itoa(resp.StatusCode) + " with " + string(decodeIt)
+		addToSuccess := "\033[32m" + "Success! " + strconv.Itoa(resp.StatusCode) + " with " + string(decodeIt) + "\033[0m"
 		return addToSuccess
 	} else {
 		return ""
