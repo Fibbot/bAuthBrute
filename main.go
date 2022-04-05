@@ -1,8 +1,8 @@
 package main
 
 import (
-	conc "bAuthBrute/pkg/handlers"
 	fileHandler "bAuthBrute/pkg/handlers"
+	reqHandler "bAuthBrute/pkg/handlers"
 	"flag"
 	"fmt"
 )
@@ -14,17 +14,16 @@ func main() {
 	passwordList := flag.String("p", "./small", "password list")
 	//====================	Threading TBD - probably need to figure out a way to slow this down
 	// threads := flag.Int("t", 1, "threads")
-	urlInput := flag.String("t", "http://localhost:8080/test", "target url")
+	urlInput := flag.String("url", "http://localhost:8080/test", "target url")
 	method := flag.String("m", "POST", "request method")
 	//================TODO	probably need a cookie(s) value here too
-
 	flag.Parse()
 	// fmt.Println(*threads)
 	//====================	Handle Files
 	users := fileHandler.ImportFile(*userList)
 	pass := fileHandler.ImportFile(*passwordList)
 	//====================	Hit 'em up
-	results := conc.SyncScanWg(users, *urlInput, pass, *method)
+	results := reqHandler.MakeDict(users, *urlInput, pass, *method)
 	for i := 0; i < len(results); i++ {
 		fmt.Println(results[i])
 	}

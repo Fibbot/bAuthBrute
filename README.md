@@ -12,3 +12,4 @@ go run main.go -u userListLocation -p passwordListLocation -t https://site.com/t
 - [ ] add ability to add cookies in case these are needed to hit endpoint
 - [ ] add ability to "go get" package - fix import names for something non-local
 - [ ] probably add a 'kill if success' flag
+- [ ] add a "what is success" flag - could be a 301/302 means a successful login
