@@ -5,9 +5,13 @@ basic auth endpoint brute forcer
 go run main.go -u userList -p passwordList -url https://site.com/thing -m POST -s 200
 
 -m request method (default "POST")
--p password list (default "./small")
+
+-p password list (default "./samplePasswords")
+
 -s success on status code (default 200)
+
 -u user list (default "./sampleUsers")
+
 -url target url (default "http://localhost:8080/test")
 
 # TODO
