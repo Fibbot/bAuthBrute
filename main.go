@@ -14,7 +14,7 @@ func timeTrack(start time.Time, name string) {
 }
 
 func main() {
-	//defer timeTrack(time.Now(), "timetest")
+	defer timeTrack(time.Now(), "timetest")
 	//====================	Handle flags
 	fmt.Println("basic auth bruting")
 	userList := flag.String("u", "./sampleUsers", "user list")
@@ -22,13 +22,14 @@ func main() {
 	urlInput := flag.String("url", "http://localhost:8080/example", "target url")
 	method := flag.String("m", "POST", "request method")
 	success := flag.Int("s", 200, "success on status code")
+	threads := flag.Int("t", 10, "requests/sec")
 	//================TODO	probably need to add cookie value(s) here too if those are needed
 	flag.Parse()
 	//====================	Handle Files
 	users := fileHandler.ImportFile(*userList)
 	pass := fileHandler.ImportFile(*passwordList)
 	//====================	Hit 'em up
-	results := reqHandler.MakeDict(users, *urlInput, pass, *method, *success)
+	results := reqHandler.MakeDict(users, *urlInput, pass, *method, *success, *threads)
 	for i := 0; i < len(results); i++ {
 		fmt.Println(results[i])
 	}

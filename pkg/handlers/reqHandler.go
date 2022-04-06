@@ -2,14 +2,17 @@ package handlers
 
 import (
 	"encoding/base64"
+	"fmt"
 	"log"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
+	"sync"
+	"time"
 )
 
-func MakeDict(users []string, urlInput string, pass []string, method string, success int) []string {
+func MakeDict(users []string, urlInput string, pass []string, method string, success int, threads int) []string {
 
 	bigDict := make([]string, 0)
 	results := make([]string, 0)
@@ -22,17 +25,53 @@ func MakeDict(users []string, urlInput string, pass []string, method string, suc
 		}
 	}
 
-	for i := 0; i < len(bigDict); i++ {
-		a := makeRequest(bigDict[i], urlInput, method, success)
-		if a != "" {
-			results = append(results, a)
+	semaphore := make(chan struct{}, 5)
+	rate := make(chan struct{}, threads)
+	ch := make(chan string, 10)
+	go func() {
+		ticker := time.NewTicker(100 * time.Millisecond)
+		defer ticker.Stop()
+		for range ticker.C {
+			_, ok := <-rate
+			// if this isn't going to run indefinitely, signal
+			// this to return by closing the rate channel.
+			if !ok {
+				return
+			}
 		}
+	}()
+
+	time.Sleep(time.Second)
+	var wg sync.WaitGroup
+	start := time.Now()
+
+	for i := 0; i < len(bigDict); i++ {
+		wg.Add(1)
+		go func(j int) {
+			rate <- struct{}{}
+			semaphore <- struct{}{}
+			defer func() {
+				<-semaphore
+			}()
+
+			makeRequest(bigDict[j], urlInput, method, success, ch, &wg)
+		}(i)
 	}
 
+	wg.Wait()
+	close(ch)
+
+	dur := time.Since(start)
+	fmt.Printf("sent %d requests in %s\n", len(bigDict), dur)
+	for x := range ch {
+		if x != "" {
+			results = append(results, x)
+		}
+	}
 	return results
 }
 
-func makeRequest(userPass string, urlInput string, method string, success int) string {
+func makeRequest(userPass string, urlInput string, method string, success int, ch chan string, wg *sync.WaitGroup) {
 	v := url.Values{}
 	v.Set("name", "valueOfName")                                                 // add to body
 	client := &http.Client{}                                                     // create the request client
@@ -43,22 +82,17 @@ func makeRequest(userPass string, urlInput string, method string, success int) s
 	if err != nil {
 		log.Fatal(err)
 	}
-	/*
-		bodyText, err := ioutil.ReadAll(resp.Body) // resp. body requires this to print correctly
-		b := string(bodyText)
-		fmt.Println(b)
-		fmt.Println(resp.Status)
-	*/
 
+	resp.Body.Close()
 	if resp.StatusCode == success {
 		decodeIt, err := base64.StdEncoding.DecodeString(userPass)
 		if err != nil {
 			log.Fatal(err)
 		}
 		addToSuccess := "\033[32m" + "Success! " + strconv.Itoa(resp.StatusCode) + " with " + string(decodeIt) + "\033[0m"
-		return addToSuccess
+		ch <- addToSuccess
+		wg.Done()
 	} else {
-		return ""
+		wg.Done()
 	}
-
 }
