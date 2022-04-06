@@ -13,6 +13,7 @@ go run main.go -u userList -p passwordList -url https://site.com/thing -m POST -
 -u user list (default "./sampleUsers")
 
 -url target url (default "http://localhost:8080/test")
+
 -z req/s... ish (default 10)
 
 # TODO
