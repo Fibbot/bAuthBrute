@@ -64,7 +64,7 @@ func MakeDict(users []string, urlInput string, pass []string, method string, suc
 	dur := time.Since(start)
 	fmt.Printf("sent %d requests in %s\n", len(bigDict), dur)
 	for x := range ch {
-		if x != "" {
+		if x != "" { //uhhh i think i can remove this now with how there's no return value but idk, working on sth else rn
 			results = append(results, x)
 		}
 	}
